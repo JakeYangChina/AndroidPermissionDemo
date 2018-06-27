@@ -4,7 +4,6 @@ import android.app.Application;
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.ArrayMap;
-import android.util.Log;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -49,72 +48,47 @@ public class Permission {
 
             for (Method method : declaredMethods) {
                 if (method.isAnnotationPresent(RequestPermission.class)) {
-                    method.setAccessible(true);
                     RequestPermission requestPermission = method.getAnnotation(RequestPermission.class);
-                    int code = requestPermission.requestCode();
-                    Obj o = arrayMap.get(code);
-                    if (o == null) {
-                        o = new Obj();
-                        arrayMap.put(code, o);
-                    }
-
-                    o.mRequestMethodName = method.getName();
-                    o.mRequestPermissionMethod = method;
-                    o.mObject = currentObj;
-                    o.mRequestCode = code;
-                    o.mPermission = requestPermission.value();
-
+                    apply(requestPermission,
+                            null,
+                            null,
+                            null,
+                            arrayMap, method,
+                            currentObj,
+                            requestPermission.requestCode());
                 }
 
                 if (method.isAnnotationPresent(RequestPermissionNoPassed.class)) {
-                    method.setAccessible(true);
                     RequestPermissionNoPassed requestPermissionNoPassed = method.getAnnotation(RequestPermissionNoPassed.class);
-                    int code = requestPermissionNoPassed.requestCode();
-                    Obj o = arrayMap.get(code);
-                    if (o == null) {
-                        o = new Obj();
-                        arrayMap.put(code, o);
-                    }
-
-                    Class<?>[] parameterTypes = method.getParameterTypes();
-                    o.mIsHaveParmPasted = parameterTypes != null && parameterTypes.length > 0;
-                    o.mRequestPermissionCanceledMethod = method;
-                    o.mObject = currentObj;
-                    o.mRequestCode = code;
+                    apply(null,
+                            requestPermissionNoPassed,
+                            null,
+                            null,
+                            arrayMap, method,
+                            currentObj,
+                            requestPermissionNoPassed.requestCode());
                 }
 
                 if (method.isAnnotationPresent(RequestPermissionDenied.class)) {
                     RequestPermissionDenied requestPermissionDenied = method.getAnnotation(RequestPermissionDenied.class);
-                    int code = requestPermissionDenied.requestCode();
-                    Obj o = arrayMap.get(code);
-                    method.setAccessible(true);
-                    if (o == null) {
-                        o = new Obj();
-                        arrayMap.put(code, o);
-                    }
-
-                    Class<?>[] parameterTypes = method.getParameterTypes();
-                    o.mIsHaveParmDenied = parameterTypes != null && parameterTypes.length > 0;
-                    o.mRequestPermissionDeniedMethod = method;
-                    o.mObject = currentObj;
-                    o.mRequestCode = code;
+                    apply(null,
+                            null,
+                            requestPermissionDenied,
+                            null,
+                            arrayMap, method,
+                            currentObj,
+                            requestPermissionDenied.requestCode());
                 }
 
                 if (method.isAnnotationPresent(RequestPermissionAutoOpenSetting.class)) {
                     RequestPermissionAutoOpenSetting requestPermissionAutoOpenSetting = method.getAnnotation(RequestPermissionAutoOpenSetting.class);
-                    int code = requestPermissionAutoOpenSetting.requestCode();
-                    Obj o = arrayMap.get(code);
-                    method.setAccessible(true);
-                    if (o == null) {
-                        o = new Obj();
-                        arrayMap.put(code, o);
-                    }
-
-                    Class<?>[] parameterTypes = method.getParameterTypes();
-                    o.mIsHaveParmDenied = parameterTypes != null && parameterTypes.length > 0;
-                    o.mRequestPermissionAutoOpenSettingMethod = method;
-                    o.mObject = currentObj;
-                    o.mRequestCode = code;
+                    apply(null,
+                            null,
+                            null,
+                            requestPermissionAutoOpenSetting,
+                            arrayMap, method,
+                            currentObj,
+                            requestPermissionAutoOpenSetting.requestCode());
                 }
             }
         }
@@ -164,10 +138,9 @@ public class Permission {
                                         }
                                     }
 
-                                    if (o.mRequestPermissionAutoOpenSettingMethod != null){
+                                    if (o.mRequestPermissionAutoOpenSettingMethod != null) {
                                         o.mRequestPermissionAutoOpenSettingMethod.invoke(currentObj, sChain);
-                                        if (sChain.getState()){
-                                            Log.e("MainActivity", "=========");
+                                        if (sChain.getState()) {
                                             PermissionUtils.goToMenu(context);
                                         }
                                     }
@@ -180,7 +153,58 @@ public class Permission {
                 break;
             }
         }
+    }
 
+    private static void apply(
+            RequestPermission requestPermission,
+            RequestPermissionNoPassed requestPermissionNoPassed,
+            RequestPermissionDenied requestPermissionDenied,
+            RequestPermissionAutoOpenSetting requestPermissionAutoOpenSetting,
+            ArrayMap<Integer, Obj> arrayMap,
+            Method method,
+            Object currentObj,
+            int code) {
+
+        if (requestPermission != null) {
+            method.setAccessible(true);
+            Obj o = arrayMap.get(code);
+            if (o == null) {
+                o = new Obj();
+                arrayMap.put(code, o);
+            }
+            o.applyPermission(currentObj, method, requestPermission.value(), code);
+        }
+
+        if (requestPermissionNoPassed != null) {
+            method.setAccessible(true);
+            Obj o = arrayMap.get(code);
+            if (o == null) {
+                o = new Obj();
+                arrayMap.put(code, o);
+            }
+            Class<?>[] parameterTypes = method.getParameterTypes();
+            o.applyPermissionNoPassed(currentObj, method, code, parameterTypes);
+        }
+        if (requestPermissionDenied != null) {
+            Obj o = arrayMap.get(code);
+            method.setAccessible(true);
+            if (o == null) {
+                o = new Obj();
+                arrayMap.put(code, o);
+            }
+            Class<?>[] parameterTypes = method.getParameterTypes();
+            o.applyPermissionDenied(currentObj, method, code, parameterTypes);
+        }
+        if (requestPermissionAutoOpenSetting != null) {
+            Obj o = arrayMap.get(code);
+            method.setAccessible(true);
+            if (o == null) {
+                o = new Obj();
+                arrayMap.put(code, o);
+            }
+            Class<?>[] parameterTypes = method.getParameterTypes();
+            o.applyAutoOpenSetting(currentObj, method, code, parameterTypes);
+        }
     }
 
     private static void checkNull(Object currentObj, String requestMethodName) {

@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
 
     /**
-     * API：
+     * API：Permission类
      * public static void init(Application application)此方法可以不使用，如果使用了，可以直接调用requestPermission两个参数的方法
      *<p>
      * public static void requestPermission(Object currentObj, String requestMethodName)使用此方法前必须要先初始化init()方法

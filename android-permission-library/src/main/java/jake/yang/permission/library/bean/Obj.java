@@ -15,4 +15,33 @@ public class Obj {
 
     public boolean mIsHaveParmPasted;
     public boolean mIsHaveParmDenied;
+
+    public void applyPermission(Object currentObj, Method method, String[] requestPermission, int code) {
+        this.mRequestMethodName = method.getName();
+        this.mRequestPermissionMethod = method;
+        this.mObject = currentObj;
+        this.mRequestCode = code;
+        this.mPermission = requestPermission;
+    }
+
+    public void applyPermissionNoPassed(Object currentObj, Method method, int code, Class<?>[] parameterTypes) {
+        this.mRequestPermissionCanceledMethod = method;
+        this.mIsHaveParmPasted = parameterTypes != null && parameterTypes.length > 0;
+        this.mObject = currentObj;
+        this.mRequestCode = code;
+    }
+
+    public void applyPermissionDenied(Object currentObj, Method method, int code, Class<?>[] parameterTypes) {
+        this.mRequestPermissionDeniedMethod = method;
+        this.mIsHaveParmDenied = parameterTypes != null && parameterTypes.length > 0;
+        this.mObject = currentObj;
+        this.mRequestCode = code;
+    }
+
+    public void applyAutoOpenSetting(Object currentObj, Method method, int code, Class<?>[] parameterTypes) {
+        this.mIsHaveParmDenied = parameterTypes != null && parameterTypes.length > 0;
+        this.mRequestPermissionAutoOpenSettingMethod = method;
+        this.mObject = currentObj;
+        this.mRequestCode = code;
+    }
 }
