@@ -42,7 +42,7 @@
     @RequestPermissionAutoOpenSetting(requestCode = 6)
     public void autoOpenSetting(Chain chain){//一定要指定参数
         chain.open();//开启系统设置页面
-        Log.e(TAG, "可以谈对话框，提示用户手动开启设置页面，当点击确认按钮可以调用chain.open()方法，打开系统设置页面");
+        Log.e(TAG, "可以弹出对话框，提示用户手动开启设置页面，当点击确认按钮可以调用chain.open()方法，打开系统设置页面");
     }
 ```
 ### 上面四个注解为一组请求，requestCode控制是否是同一组请求，可以定义多组请求权限，一组请求内可以请求多个权限，也可以请求一个权限
