@@ -139,7 +139,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onDestroy() {
         super.onDestroy();
         //释放TestDemo类内申请的权限内存
-        mDemo.clear();
+        if (mDemo != null)
+            mDemo.clear();
 
         //释放全部内存
         Permission.destroyAllPermission();
