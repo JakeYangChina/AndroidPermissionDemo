@@ -70,5 +70,5 @@
 #### ```public static void destroyAllPermission()```
 作用：释放申请的权限，防止内存泄漏<br>建议在程序退出时调用，或最后一个页面关闭时调用
 
-### ```从github clone 代码到本地放到AS后发现，发现并不能点“Run”键运行app，并报错Error:Please select Android SDK：```
+## ```从github clone 代码到本地放到AS后发现，发现并不能点“Run”键运行app，并报错Error:Please select Android SDK：```
 解决办法：在Android Studio内找到File --> Project Structure 选中app，再点击右侧上方 Properties 修改Build Tools Version版本即可
