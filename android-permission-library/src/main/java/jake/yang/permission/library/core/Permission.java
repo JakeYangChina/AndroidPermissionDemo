@@ -16,7 +16,6 @@ import jake.yang.permission.library.annotation.RequestPermissionDenied;
 import jake.yang.permission.library.annotation.RequestPermissionNoPassed;
 import jake.yang.permission.library.bean.Obj;
 import jake.yang.permission.library.interfaces.IPermission;
-import jake.yang.permission.library.utils.PermissionUtils;
 
 @SuppressWarnings("unused")
 public class Permission {
@@ -48,7 +47,7 @@ public class Permission {
             for (Method method : declaredMethods) {
                 if (method.isAnnotationPresent(RequestPermission.class)) {
                     RequestPermission requestPermission = method.getAnnotation(RequestPermission.class);
-                    Chain chain = new Chain();
+                    Chain chain = new Chain(context);
                     apply(requestPermission,
                             null,
                             null,
@@ -144,9 +143,6 @@ public class Permission {
 
                                     if (o.mRequestPermissionAutoOpenSettingMethod != null && o.mChain != null) {
                                         o.mRequestPermissionAutoOpenSettingMethod.invoke(currentObj, o.mChain);
-                                        if (o.mChain.getState()) {
-                                            PermissionUtils.goToMenu(context);
-                                        }
                                     }
 
                                 } catch (Exception e) {

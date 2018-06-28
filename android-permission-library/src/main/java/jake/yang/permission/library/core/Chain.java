@@ -1,18 +1,20 @@
 package jake.yang.permission.library.core;
 
+import android.content.Context;
+
+import jake.yang.permission.library.utils.PermissionUtils;
+
 @SuppressWarnings("unused")
 public class Chain {
     private boolean mIsOpen;
+    private Context mContext;
 
     public void open() {
-        this.mIsOpen = true;
+        PermissionUtils.goToMenu(mContext);
     }
 
-    public void close() {
-        this.mIsOpen = false;
+    Chain(Context context ){
+        this.mContext = context.getApplicationContext();
     }
 
-    public boolean getState() {
-        return this.mIsOpen;
-    }
 }

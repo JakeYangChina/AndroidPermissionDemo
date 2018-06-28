@@ -1,7 +1,9 @@
 package jake.yang.permission.demo;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +23,7 @@ import jake.yang.permission.library.core.Permission;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     public static final String TAG = MainActivity.class.getSimpleName();
     private TestDemo mDemo;
+    private AlertDialog mAlertDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,9 +97,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @RequestPermissionAutoOpenSetting
-    public void isOpenSetting(Chain chain) {//必须写参数，此方法可以不写，默认为不开启系统设置页面
+    public void isOpenSetting(final Chain chain) {//必须写参数，此方法可以不写，默认为不开启系统设置页面
         //chain.open();//开启系统设置页面
-        //chain.close();//关闭系统设置页面
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("系统设置页面");
+        builder.setMessage("开始系统设置页面");
+        builder.setNeutralButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (mAlertDialog != null){
+                    mAlertDialog.cancel();
+                }
+                chain.open();//开启系统设置页面
+            }
+        });
+        mAlertDialog = builder.create();
+        mAlertDialog.show();
         Log.e(TAG, "第一组内isOpenSetting方法");
     }
 
@@ -131,7 +147,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @RequestPermissionAutoOpenSetting(requestCode = 2)
     public void isOpenSetting2(Chain chain) {//必须写参数，此方法可以不写，默认为不开启系统设置页面
         //chain.open();//开启系统设置页面
-        //chain.close();//关闭系统设置页面
         Log.e(TAG, "第二组内isOpenSetting方法");
     }
 
