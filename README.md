@@ -41,7 +41,7 @@
 ```
     @RequestPermissionAutoOpenSetting(requestCode = 6)
     public void autoOpenSetting(Chain chain){//一定要指定参数
-        chain.open();//允许开启系统设置页面
+        chain.open();//开启系统设置页面
         Log.e(TAG, "可以谈对话框，提示用户手动开启设置页面，当点击确认按钮可以调用chain.open()方法，打开系统设置页面");
     }
 ```
