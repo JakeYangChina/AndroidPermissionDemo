@@ -75,5 +75,5 @@
 <hr>
 <br>
 
-## 从github clone 代码到本地放到AS后发现，发现并不能点“Run”键运行app，并报错Error:Please select Android SDK，需要指定Build Tools Version版本
+## 从github clone 代码到本地放到AS后，发现并不能点“Run”键运行app，并报错Error:Please select Android SDK，需要指定Build Tools Version版本
 解决办法：在Android Studio内找到File --> Project Structure 选中app，再点击右侧上方 Properties 修改Build Tools Version版本即可
