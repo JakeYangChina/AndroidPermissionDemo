@@ -11,13 +11,16 @@ import android.widget.Toast;
 import java.util.List;
 
 import jake.yang.permission.library.annotation.RequestPermission;
+import jake.yang.permission.library.annotation.RequestPermissionAutoOpenSetting;
 import jake.yang.permission.library.annotation.RequestPermissionDenied;
 import jake.yang.permission.library.annotation.RequestPermissionNoPassed;
+import jake.yang.permission.library.core.Chain;
 import jake.yang.permission.library.core.Permission;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "DanglingJavadoc"})
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     public static final String TAG = MainActivity.class.getSimpleName();
+    private TestDemo mDemo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,22 +35,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    /**
-     * 说明：此权限框架可以运行在任意类内，可以是Activity，Fragment，Service或者是其它类内
-     */
 
     /**
+     * 说明：此权限框架可以在任意类内进行权限申请，例如：Activity，Fragment，Service或者是其它类内使用
+     *
      * API：Permission类
      * public static void init(Application application)此方法可以不使用，如果使用了，可以直接调用requestPermission两个参数的方法
-     *<p>
+     * <p>
      * public static void requestPermission(Object currentObj, String requestMethodName)使用此方法前必须要先初始化init()方法
      * 参数一：当前类对象，参数二：要调用的方法名（必须是被@RequestPermission注解修饰的方法）
-     *<p>
+     * <p>
      * public static void requestPermission(Context context, Object currentObj, String requestMethodName)申请权限
      * 参数一：context，参数二：当前类对象，参数三：要调用的方法名（必须是被@RequestPermission注解修饰的方法）
-     *<p>
-     * public static void destroyPermission(Object currentObj)释放指定类内申请的权限，参数为：当前类对象
-     *<p>
+     * <p>
+     * public static void destroyPermission(Object currentObj)释放指定类申请的权限，参数为：当前类对象
+     * <p>
      * public static void destroyAllPermission()释放所有权限，应用退出时，调用此方法
      */
 
@@ -71,37 +73,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * 当不使用此注解时，默认为不开启系统设置页面，可以在这个注解方法内弹对话框，让用户手动开启页面
      */
 
-    //=================第一种写法，不指定requestCode请求码=======================
+    //=================第一种写法，不指定requestCode请求码，默认为同一组请求=======================
     @RequestPermission({Manifest.permission.ACCESS_COARSE_LOCATION})
     public void requestPermission() {
-        Log.e(TAG, "requestPermission");
+        Log.e(TAG, "第一组内requestPermission方法");
         Toast.makeText(this, "success", Toast.LENGTH_SHORT).show();
     }
 
     @RequestPermissionNoPassed
-    public void requestPermissionNoPassed() {
-        Log.e(TAG, "requestPermissionCanceled");
+    public void requestPermissionNoPassed() {//可指定参数List<String>
+        Log.e(TAG, "第一组内requestPermissionCanceled方法");
         Toast.makeText(this, "requestPermissionCanceled", Toast.LENGTH_SHORT).show();
     }
 
     @RequestPermissionDenied
-    public void requestPermissionDenied() {
-        Log.e(TAG, "requestPermissionDenied");
+    public void requestPermissionDenied() {//可指定参数List<String>
+
+        Log.e(TAG, "第一组内requestPermissionDenied方法");
         Toast.makeText(this, "requestPermissionDenied", Toast.LENGTH_SHORT).show();
     }
 
-    //=================第二种写法，指定requestCode请求码，相同的请求码为同一组=======================
+    @RequestPermissionAutoOpenSetting
+    public void isOpenSetting(Chain chain) {//必须写参数，此方法可以不写，默认为不开启系统设置页面
+        //chain.open();//开启系统设置页面
+        //chain.close();//关闭系统设置页面
+        Log.e(TAG, "第一组内isOpenSetting方法");
+    }
+
+
+    //=================第二种写法，指定requestCode请求码，相同的请求码为同一组请求=======================
 
     @RequestPermission(value = {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, requestCode = 2)
     public void requestPermission2() {
-        Log.e(TAG, "requestPermission2");
+        Log.e(TAG, "第二组内requestPermission2方法");
         Toast.makeText(this, "success2", Toast.LENGTH_SHORT).show();
     }
 
     //被@RequestPermissionNoPassed注解标注的方法可以指定一个List<String>参数，也可以不指定
     @RequestPermissionNoPassed(requestCode = 2)
     public void requestPermissionNoPassed2(List<String> noPassPermissionList) {
-        Log.e(TAG, "requestPermissionCanceled2");
+        Log.e(TAG, "第二组内requestPermissionCanceled2方法");//可以不指定参数
         for (String noPassPermission : noPassPermissionList) {
             Log.e(TAG, "未授予的权限：" + noPassPermission);
         }
@@ -109,18 +120,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @RequestPermissionDenied(requestCode = 2)
-    public void requestPermissionDenied2(List<String> deniedPermissionList) {
-        Log.e(TAG, "requestPermissionDenied2");
+    public void requestPermissionDenied2(List<String> deniedPermissionList) {//可以不指定参数
+        Log.e(TAG, "第二组内requestPermissionDenied2方法");
         for (String deniedPermission : deniedPermissionList) {
             Log.e(TAG, "勾选拒绝后不在询问选框的权限：" + deniedPermission);
         }
         Toast.makeText(this, "requestPermissionDenied2", Toast.LENGTH_SHORT).show();
     }
 
+    @RequestPermissionAutoOpenSetting(requestCode = 2)
+    public void isOpenSetting2(Chain chain) {//必须写参数，此方法可以不写，默认为不开启系统设置页面
+        //chain.open();//开启系统设置页面
+        //chain.close();//关闭系统设置页面
+        Log.e(TAG, "第二组内isOpenSetting方法");
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //释放权限
+        //释放TestDemo类内申请的权限内存
+        mDemo.clear();
+
+        //释放全部内存
         Permission.destroyAllPermission();
     }
 
@@ -137,9 +158,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.butClass:
                 //在其它类内请求权限
-                TestDemo demo = new TestDemo();
-                demo.requestPermission();
-                demo.clear();
+                mDemo = new TestDemo();
+                mDemo.requestPermission();
                 break;
             default:
                 break;

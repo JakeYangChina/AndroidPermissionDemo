@@ -13,12 +13,12 @@ import jake.yang.permission.library.core.Permission;
 @SuppressWarnings("unused")
 public class TestDemo {
     public void requestPermission() {
-        Permission.requestPermission(this, "pass");
+        Permission.requestPermission(this, "request");
     }
 
     @RequestPermission(value = {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, requestCode = 6)
-    public void pass() {
-        Log.e(MainActivity.TAG, "pass");
+    public void request() {
+        Log.e(MainActivity.TAG, "request");
     }
 
     @RequestPermissionNoPassed(requestCode = 6)

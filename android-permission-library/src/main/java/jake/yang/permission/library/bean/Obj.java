@@ -2,6 +2,9 @@ package jake.yang.permission.library.bean;
 
 import java.lang.reflect.Method;
 
+import jake.yang.permission.library.core.Chain;
+
+@SuppressWarnings("WeakerAccess")
 public class Obj {
     public int mRequestCode;
     public String mRequestMethodName;
@@ -12,6 +15,8 @@ public class Obj {
     public Method mRequestPermissionAutoOpenSettingMethod;
     public Object mObject;
     public String[] mPermission;
+
+    public Chain mChain;
 
     public boolean mIsHaveParmPasted;
     public boolean mIsHaveParmDenied;
@@ -44,4 +49,19 @@ public class Obj {
         this.mObject = currentObj;
         this.mRequestCode = code;
     }
+
+    public void clear(){
+        this.mObject = null;
+        this.mRequestPermissionAutoOpenSettingMethod = null;
+        this.mRequestPermissionDeniedMethod = null;
+        this.mRequestPermissionCanceledMethod = null;
+        this.mRequestPermissionMethod = null;
+        this.mPermission = null;
+        this.mChain = null;
+    }
+
+    public void setChain(Chain chain){
+        this.mChain = chain;
+    }
+
 }

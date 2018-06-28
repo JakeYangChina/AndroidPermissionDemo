@@ -158,27 +158,12 @@ public class PermissionUtils {
             return true;
         }
 
-        /*for (String permission : permissions) {
-            //Log.e("aaaaaa", "权限：" + permission);
-            // 这个API主要用于给用户一个申请权限的解释，该方法只有在用户在上一次已经拒绝过你的这个权限申请。
-            // 也就是说，用户已经拒绝一次了，你又弹个授权框，你需要给用户一个解释，为什么要授权，则使用该方法。
-            //手机不勾选不再提示选框时,同时点击禁止按钮返回true
-            //当勾选不再提示选框时，同时点击禁止按钮，返回false
-            if (!ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
-                //Log.e("aaaaaa", "勾选了不再提示按钮：" + permission);
-                list.add(permission);
-                Log.e("aaaaaaaaa", "=======" + permission);
-            }
-        }*/
-
         for (int i = 0; i < permissions.length; i++) {
-            //Log.e("aaaaaa", "权限：" + permission);
             // 这个API主要用于给用户一个申请权限的解释，该方法只有在用户在上一次已经拒绝过你的这个权限申请。
             // 也就是说，用户已经拒绝一次了，你又弹个授权框，你需要给用户一个解释，为什么要授权，则使用该方法。
             //手机不勾选不再提示选框时,同时点击禁止按钮返回true
             //当勾选不再提示选框时，同时点击禁止按钮，返回false
             if (!ActivityCompat.shouldShowRequestPermissionRationale(activity, permissions[i])) {
-                //Log.e("aaaaaa", "勾选了不再提示按钮：" + permission);
                 if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
                     list.add(permissions[i]);
                 }

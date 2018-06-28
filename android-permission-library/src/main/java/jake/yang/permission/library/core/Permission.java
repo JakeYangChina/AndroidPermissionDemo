@@ -22,7 +22,6 @@ import jake.yang.permission.library.utils.PermissionUtils;
 public class Permission {
     private static final ArrayMap<String, ArrayMap<Integer, Obj>> MAP = new ArrayMap<>();
     private static Application sApplication;
-    private static Chain sChain = new Chain();
 
     public static void requestPermission(final Object currentObj, String requestMethodName) {
         if (sApplication == null) {
@@ -49,13 +48,15 @@ public class Permission {
             for (Method method : declaredMethods) {
                 if (method.isAnnotationPresent(RequestPermission.class)) {
                     RequestPermission requestPermission = method.getAnnotation(RequestPermission.class);
+                    Chain chain = new Chain();
                     apply(requestPermission,
                             null,
                             null,
                             null,
                             arrayMap, method,
                             currentObj,
-                            requestPermission.requestCode());
+                            requestPermission.requestCode(),
+                            chain);
                 }
 
                 if (method.isAnnotationPresent(RequestPermissionNoPassed.class)) {
@@ -66,7 +67,8 @@ public class Permission {
                             null,
                             arrayMap, method,
                             currentObj,
-                            requestPermissionNoPassed.requestCode());
+                            requestPermissionNoPassed.requestCode(),
+                            null);
                 }
 
                 if (method.isAnnotationPresent(RequestPermissionDenied.class)) {
@@ -77,7 +79,8 @@ public class Permission {
                             null,
                             arrayMap, method,
                             currentObj,
-                            requestPermissionDenied.requestCode());
+                            requestPermissionDenied.requestCode(),
+                            null);
                 }
 
                 if (method.isAnnotationPresent(RequestPermissionAutoOpenSetting.class)) {
@@ -88,7 +91,8 @@ public class Permission {
                             requestPermissionAutoOpenSetting,
                             arrayMap, method,
                             currentObj,
-                            requestPermissionAutoOpenSetting.requestCode());
+                            requestPermissionAutoOpenSetting.requestCode(),
+                            null);
                 }
             }
         }
@@ -138,9 +142,9 @@ public class Permission {
                                         }
                                     }
 
-                                    if (o.mRequestPermissionAutoOpenSettingMethod != null) {
-                                        o.mRequestPermissionAutoOpenSettingMethod.invoke(currentObj, sChain);
-                                        if (sChain.getState()) {
+                                    if (o.mRequestPermissionAutoOpenSettingMethod != null && o.mChain != null) {
+                                        o.mRequestPermissionAutoOpenSettingMethod.invoke(currentObj, o.mChain);
+                                        if (o.mChain.getState()) {
                                             PermissionUtils.goToMenu(context);
                                         }
                                     }
@@ -163,7 +167,8 @@ public class Permission {
             ArrayMap<Integer, Obj> arrayMap,
             Method method,
             Object currentObj,
-            int code) {
+            int code,
+            Chain chain) {
 
         if (requestPermission != null) {
             method.setAccessible(true);
@@ -172,6 +177,7 @@ public class Permission {
                 o = new Obj();
                 arrayMap.put(code, o);
             }
+            o.setChain(chain);
             o.applyPermission(currentObj, method, requestPermission.value(), code);
         }
 
@@ -231,6 +237,12 @@ public class Permission {
         Class<?> aClass = currentObj.getClass();
         ArrayMap<Integer, Obj> arrayMap = MAP.get(aClass.getSimpleName());
         if (arrayMap != null) {
+            Set<Integer> arrays = arrayMap.keySet();
+            for (int key : arrays) {
+                Obj obj = arrayMap.get(key);
+                obj.clear();
+            }
+            arrays.clear();
             arrayMap.clear();
             MAP.remove(aClass.getSimpleName());
         }
@@ -241,6 +253,12 @@ public class Permission {
         Set<String> keySet = MAP.keySet();
         for (String key : keySet) {
             ArrayMap<Integer, Obj> arrayMap = MAP.get(key);
+            Set<Integer> arrays = arrayMap.keySet();
+            for (int k : arrays) {
+                Obj obj = arrayMap.get(k);
+                obj.clear();
+            }
+            arrays.clear();
             arrayMap.clear();
         }
         MAP.clear();
