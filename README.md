@@ -75,5 +75,5 @@
 <hr>
 <br>
 
-## 从github clone 代码到本地放到AS后，发现并不能点“Run”键运行app，挡强制点击运行app，会弹出窗口，在最下方提示Error:Please select Android SDK。解决办法如下：
+## 从github clone 代码到本地放到AS后，发现并不能点“Run”键运行app，当强制点击运行app，会弹出窗口，在最下方提示Error:Please select Android SDK。解决办法如下：
 解决办法：在Android Studio内找到File --> Project Structure 选中app，再点击右侧上方 Properties 修改Build Tools Version版本即可
