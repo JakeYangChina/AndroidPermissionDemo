@@ -47,12 +47,15 @@
 ```
 ### 上面四个注解为一组请求，requestCode控制是否是同一组请求，可以定义多组请求权限，一组请求内可以请求多个权限，也可以请求一个权限
 ### 通过如下方法执行某一组的权限申请
-```
-    //方法一：调用两个参数的方法，前提是已经初始化 init() 方法
-    Permission.requestPermission(this, "request");//第二个参数：方法名必须是被@RequestPermission注解声明的方法
-    
-    //方法二：调用三个参数的方法
-    Permission.requestPermission(this, this, "request");//第二个参数：方法名必须是被@RequestPermission注解声明的方法
+``` 
+    //方法一：调用一个参数的方法
+    Permission.requestPermission(this);//不指定requestCode代表请求默认的一组，注解内不指定requestCode
+
+    //方法二：调用两个参数的方法，前提是已经初始化 init() 方法
+    Permission.requestPermission(this, 2);//第二个参数：requestCode，注意同一组内权限requestCode必须相同，通过requestCode指定请求哪组权限
+
+    //方法三：调用三个参数的方法
+    Permission.requestPermission(this, this, 2);//参数一：context，参数二：当前类对象，参数三：请求码
 ```
 
 <br>
