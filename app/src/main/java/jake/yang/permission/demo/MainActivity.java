@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         builder.setNeutralButton("确定", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (mAlertDialog != null){
+                if (mAlertDialog != null) {
                     mAlertDialog.cancel();
                 }
                 chain.open();//开启系统设置页面
@@ -166,11 +166,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.butAll:
                 //请求权限
-                Permission.requestPermission(this, "requestPermission2");
+                Permission.requestPermission(this, 2);
                 break;
             case R.id.butLocal:
                 //请求权限
-                Permission.requestPermission(this, this, "requestPermission");
+                Permission.requestPermission(this, this);
                 break;
             case R.id.butClass:
                 //在其它类内请求权限

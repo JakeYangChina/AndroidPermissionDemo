@@ -2,7 +2,6 @@ package jake.yang.permission.library.core;
 
 import android.app.Application;
 import android.content.Context;
-import android.text.TextUtils;
 import android.util.ArrayMap;
 
 import java.lang.reflect.Method;
@@ -16,25 +15,37 @@ import jake.yang.permission.library.annotation.RequestPermissionDenied;
 import jake.yang.permission.library.annotation.RequestPermissionNoPassed;
 import jake.yang.permission.library.bean.Obj;
 import jake.yang.permission.library.interfaces.IPermission;
+import jake.yang.permission.library.utils.PermissionUtils;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class Permission {
     private static final ArrayMap<String, ArrayMap<Integer, Obj>> MAP = new ArrayMap<>();
     private static Application sApplication;
-
-    public static void requestPermission(final Object currentObj, String requestMethodName) {
-        if (sApplication == null) {
-            throw new RuntimeException("Application is null.");
-        }
-        requestPermission(sApplication.getApplicationContext(), currentObj, requestMethodName);
-    }
 
     public static void init(Application application) {
         sApplication = application;
     }
 
-    public static void requestPermission(final Context context, final Object currentObj, String requestMethodName) {
-        checkNull(currentObj, requestMethodName);
+    public static void requestPermission(final Object currentObj) {
+        if (sApplication == null) {
+            throw new RuntimeException("Application is null.");
+        }
+        requestPermission(sApplication.getApplicationContext(), currentObj, PermissionUtils.DEFAULT_REQUEST_CODE);
+    }
+
+    public static void requestPermission(Object currentObj, int requestCode) {
+        if (sApplication == null) {
+            throw new RuntimeException("Application is null.");
+        }
+        requestPermission(sApplication.getApplicationContext(), currentObj, requestCode);
+    }
+
+    public static void requestPermission(Context context, Object currentObj) {
+        requestPermission(sApplication.getApplicationContext(), currentObj, PermissionUtils.DEFAULT_REQUEST_CODE);
+    }
+
+    public static void requestPermission(final Context context, final Object currentObj, int requestCode) {
+        checkNull(currentObj);
 
         final Class classes = currentObj.getClass();
         ArrayMap<Integer, Obj> arrayMap = MAP.get(classes.getSimpleName());
@@ -99,60 +110,64 @@ public class Permission {
         Set<Integer> integers = arrayMap.keySet();
         for (int i : integers) {
             final Obj o = arrayMap.get(i);
-            if (o.mRequestMethodName.equals(requestMethodName)) {
-                PermissionActivity.startPermissionActivity(
-                        sApplication != null ? sApplication.getApplicationContext() : context.getApplicationContext(),
-                        o.mPermission,
-                        o.mRequestCode,
-                        new IPermission() {
-                            @Override
-                            public void ganted() {
-                                try {
-                                    if (o.mRequestPermissionMethod != null)
-                                        o.mRequestPermissionMethod.invoke(currentObj);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-
-                            @Override
-                            public void noPast(List<String> cancledPermission) {
-                                try {
-                                    if (o.mRequestPermissionCanceledMethod != null) {
-                                        if (o.mIsHaveParmPasted) {
-                                            o.mRequestPermissionCanceledMethod.invoke(currentObj, PermissionActivity.getNoPastList());
-                                        } else {
-                                            o.mRequestPermissionCanceledMethod.invoke(currentObj);
-                                        }
-                                    }
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-
-                            @Override
-                            public void denied(List<String> deniedPermission) {
-                                try {
-                                    if (o.mRequestPermissionDeniedMethod != null) {
-                                        if (o.mIsHaveParmDenied) {
-                                            o.mRequestPermissionDeniedMethod.invoke(currentObj, PermissionActivity.getList());
-                                        } else {
-                                            o.mRequestPermissionDeniedMethod.invoke(currentObj);
-                                        }
-                                    }
-
-                                    if (o.mRequestPermissionAutoOpenSettingMethod != null && o.mChain != null) {
-                                        o.mRequestPermissionAutoOpenSettingMethod.invoke(currentObj, o.mChain);
-                                    }
-
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        });
-                break;
+            if (o.mRequestCode == requestCode) {
+                startPermissionActivity(context, currentObj, o);
+                return;
             }
         }
+    }
+
+    private static void startPermissionActivity(Context context, final Object currentObj, final Obj o) {
+        PermissionActivity.startPermissionActivity(
+                sApplication != null ? sApplication.getApplicationContext() : context.getApplicationContext(),
+                o.mPermission,
+                o.mRequestCode,
+                new IPermission() {
+                    @Override
+                    public void ganted() {
+                        try {
+                            if (o.mRequestPermissionMethod != null)
+                                o.mRequestPermissionMethod.invoke(currentObj);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void noPast(List<String> cancledPermission) {
+                        try {
+                            if (o.mRequestPermissionCanceledMethod != null) {
+                                if (o.mIsHaveParmPasted) {
+                                    o.mRequestPermissionCanceledMethod.invoke(currentObj, PermissionActivity.getNoPastList());
+                                } else {
+                                    o.mRequestPermissionCanceledMethod.invoke(currentObj);
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void denied(List<String> deniedPermission) {
+                        try {
+                            if (o.mRequestPermissionDeniedMethod != null) {
+                                if (o.mIsHaveParmDenied) {
+                                    o.mRequestPermissionDeniedMethod.invoke(currentObj, PermissionActivity.getList());
+                                } else {
+                                    o.mRequestPermissionDeniedMethod.invoke(currentObj);
+                                }
+                            }
+
+                            if (o.mRequestPermissionAutoOpenSettingMethod != null && o.mChain != null) {
+                                o.mRequestPermissionAutoOpenSettingMethod.invoke(currentObj, o.mChain);
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
     }
 
     private static void apply(
@@ -209,17 +224,6 @@ public class Permission {
         }
     }
 
-    private static void checkNull(Object currentObj, String requestMethodName) {
-        checkNull(currentObj);
-        checkNull(requestMethodName);
-    }
-
-    private static void checkNull(String requestMethodName) {
-        if (TextUtils.isEmpty(requestMethodName)) {
-            throw new RuntimeException("requestMethodName is null.");
-        }
-    }
-
 
     private static void checkNull(Object currentObj) {
         if (currentObj == null) {
@@ -232,6 +236,12 @@ public class Permission {
 
         Class<?> aClass = currentObj.getClass();
         ArrayMap<Integer, Obj> arrayMap = MAP.get(aClass.getSimpleName());
+        destroy(arrayMap);
+        MAP.remove(aClass.getSimpleName());
+        clear();
+    }
+
+    private static void destroy(ArrayMap<Integer, Obj> arrayMap) {
         if (arrayMap != null) {
             Set<Integer> arrays = arrayMap.keySet();
             for (int key : arrays) {
@@ -240,22 +250,14 @@ public class Permission {
             }
             arrays.clear();
             arrayMap.clear();
-            MAP.remove(aClass.getSimpleName());
         }
-        clear();
     }
 
     public static void destroyAllPermission() {
         Set<String> keySet = MAP.keySet();
         for (String key : keySet) {
             ArrayMap<Integer, Obj> arrayMap = MAP.get(key);
-            Set<Integer> arrays = arrayMap.keySet();
-            for (int k : arrays) {
-                Obj obj = arrayMap.get(k);
-                obj.clear();
-            }
-            arrays.clear();
-            arrayMap.clear();
+            destroy(arrayMap);
         }
         MAP.clear();
         clear();

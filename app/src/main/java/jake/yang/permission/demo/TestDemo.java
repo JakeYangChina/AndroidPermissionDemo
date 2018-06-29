@@ -13,7 +13,7 @@ import jake.yang.permission.library.core.Permission;
 @SuppressWarnings("unused")
 public class TestDemo {
     public void requestPermission() {
-        Permission.requestPermission(this, "request");
+        Permission.requestPermission(this, 6);
     }
 
     @RequestPermission(value = {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, requestCode = 6)
@@ -22,22 +22,22 @@ public class TestDemo {
     }
 
     @RequestPermissionNoPassed(requestCode = 6)
-    public void noPass(){
+    public void noPass() {
         Log.e(MainActivity.TAG, "noPass");
     }
 
     @RequestPermissionDenied(requestCode = 6)
-    public void denied(){
+    public void denied() {
         Log.e(MainActivity.TAG, "denied");
     }
 
     @RequestPermissionAutoOpenSetting(requestCode = 6)
-    public void autoOpenSetting(Chain chain){
+    public void autoOpenSetting(Chain chain) {
         chain.open();
         Log.e(MainActivity.TAG, "autoOpenSetting");
     }
 
-    public void clear(){
+    public void clear() {
         Permission.destroyPermission(this);
     }
 
