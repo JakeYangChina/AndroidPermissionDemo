@@ -68,10 +68,10 @@
 ## API说明：Permission类，主要是用于权限申请，内部都是静态方法
 #### ```public static void init(Application application)```
 作用：初始化Context<br>此方法可以不使用，如果使用了，可以和requestPermission两个参数的方法一起使用<br>建议放到Application内初始化
-#### ```public static void requestPermission(Object currentObj, String  requestMethodName)```
-作用：申请权限<br>参数一：当前类对象，参数二：要调用的方法名（必须是被@RequestPermission注解修饰的方法）<br>使用此方法前必须要先初始化 init() 方法
-#### ```public static void requestPermission(Context context, Object currentObj, String requestMethodName)```
-作用：申请权限<br>参数一：context，参数二：当前类对象，参数三：要调用的方法名（必须是被@RequestPermission注解修饰的方法）<br>
+#### ```public static void requestPermission(Object currentObj, int  requestCode)```
+作用：申请权限<br>参数一：当前类对象，参数二：注解内的请求码（同一组注解内的请求码要相同，通过请求码指定要执行哪组权限）<br>使用此方法前必须要先初始化 init() 方法
+#### ```public static void requestPermission(Context context, Object currentObj, int requestCode)```
+作用：申请权限<br>参数一：context，参数二：当前类对象，参数三：注解内的请求码（同一组注解内的请求码要相同，通过请求码指定要执行哪组权限）<br>
 #### ```public static void destroyPermission(Object currentObj)```
 作用：释放指定类申请的权限，防止内存泄漏<br>参数为：当前类对象
 #### ```public static void destroyAllPermission()```
