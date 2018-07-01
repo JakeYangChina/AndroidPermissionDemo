@@ -2,6 +2,7 @@
 权限检测库，兼容不同类型厂商手机，使用注解实现权限申请，使用起来很方便
 <br>说明：此权限框架可以在任意类内进行权限申请，```例如：Activity，Fragment，Service 或者是其它类内都可以使用```
 ## 使用说明
+### 项目需要依赖 ```android-permission-library``` 模块
 ### @RequestPermission注解
 指定要申请的权限（可以声明多个，但方法名不可以相同，请求码requestCode值不能相同，请求码requestCode值相同代表同一组权限）<br>注解内可以指定requestCode值，不指定即为默认值，当权限全部授予时，就会回调此注解修饰的方法<br>例如：<br>
 ```
