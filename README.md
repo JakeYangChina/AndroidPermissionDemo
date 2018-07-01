@@ -49,16 +49,16 @@
 ### 通过如下方法执行某一组的权限申请
 ``` 
     //方法一：调用一个参数的方法，前提是已经初始化 init() 方法
-    Permission.requestPermission(this);//参数一：当前类对象，不指定requestCode代表请求默认的一组，注解内不指定requestCode
+    Permission.requestPermission(this);//参数一：当前类对象，不指定requestCode代表请求默认的一组，注解内一定不要不指定requestCode值
 
     //方法二：调用两个参数的方法，前提是已经初始化 init() 方法
-    Permission.requestPermission(this, 2);//参数一：当前类对象，参数二：requestCode，注意同一组内权限requestCode必须相同，通过requestCode指定请求哪组权限
+    Permission.requestPermission(this, 6);//参数一：当前类对象，参数二：requestCode，注意同一组内权限requestCode必须相同，通过requestCode指定请求哪组权限
 
     //方法三：不用初始化 init() 方法
     Permission.requestPermission(this, this);//参数一：context，参数二：当前类对象，没指定requestCode请求的是默认没有requestCode组的权限
 
     //方法三：不用初始化 init() 方法
-    Permission.requestPermission(this, this, 2);//参数一：context，参数二：当前类对象，参数三：请求码
+    Permission.requestPermission(this, this, 6);//参数一：context，参数二：当前类对象，参数三：请求码
 ```
 
 <br>
